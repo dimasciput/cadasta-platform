@@ -25,12 +25,37 @@
           <table id="search-results" class="table table-hover datatable" data-paging-type="simple">
             <thead>
               <tr>
-                <th class="col-md-2">{% trans "Entity Class" %}</th>
-                <th class="col-md-10">{% trans "Entity Name or Description" %}</th>
+                <th class="col-md-12">{% trans "Entity Class" %}</th>
               </tr>
             </thead>
-            <tbody>
-            </tbody>
+              <tbody>
+                {% for record in search_results %}
+                <tr>
+                  <td>
+                    <table>
+                      <tr>
+                        <div>{{ record.entity_type }}</div>
+                        <h4>{{ record.type }}</h4>
+                      </tr>
+                      {% for key, attr in record.required_fields %}
+                      <tr>
+                        <td>{{ key }}</td>
+                        <td style="padding-left:50px;">{{ attr }}</td>
+                      </tr>
+                      {% endfor %}
+                      {% for key, attr in record.attributes %}
+                      <tr>
+                        <td>{{ key }}</td>
+                        <td style="padding-left:50px;">{{ attr }}</td>
+                      </tr>
+                      {% endfor %}
+                    </table>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            </tr>
           </table>
         </div>
       </div>

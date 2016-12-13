@@ -105,14 +105,10 @@
   <ul class="nav nav-sidebar">
     <li class="search">
       <!-- <a href="{% url 'search:search' object.organization.slug object.slug %}"> -->
-      <form id="sidebar-search" class>
-        <div class="form-group">
-          <span class="icon search"></span>
-        <!-- </a> -->
-          <input type="text" class="form-control" name="search" id="search-input" value="" tabindex="1" placeholder="Search..."/>
-          <button class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> {% trans "Go" %}</button>
-        </div>
-      </form>
+      <a href="{% url 'search:search' object.organization.slug object.slug %}">
+        <span class="icon"></span>
+        <span class="title">{% trans "Search" %}</span>
+      </a>
     </li><!-- needed to eliminate spacing issue on horizontal menus
     --><li class="overview">
       <a href="{% url 'organization:project-dashboard' object.organization.slug object.slug %}">

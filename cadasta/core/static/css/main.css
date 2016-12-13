@@ -4418,16 +4418,6 @@ ul.resource-actions > li {
   #project-map .btn-wrap .btn-block {
     margin: 0 auto; }
 
-/* =Search bar in sidemenu
--------------------------------------------------------------- */
-#sidebar li.search {
-  z-index: 991;
-  width: 400px;
-  overflow: visible; }
-
-#sidebar li.search form {
-  display: block; }
-
 /* =Forms
 -------------------------------------------------------------- */
 /* =Contacts form styling

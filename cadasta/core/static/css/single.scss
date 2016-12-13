@@ -68,6 +68,11 @@
       background-image: url('/static/img/icon-overview.png');
     }
   }
+  li.search {
+    .icon { 
+      background-image: url('/static/img/icon-search.png');
+    }
+  }
   li.map {
     .icon { 
       background-image: url('/static/img/icon-map.png');
@@ -106,6 +111,7 @@
 }
 
 #sidebar.overview li.overview,
+#sidebar.search li.search,
 #sidebar.map li.map,
 #sidebar.parties li.parties,
 #sidebar.resources li.resources,
@@ -275,3 +281,38 @@
     }
   }
 }
+
+/* =Search bar in sidemenu
+-------------------------------------------------------------- */
+
+
+
+// #sidebar li.search form input[type=text] {
+//   padding: 0;
+//   margin: 0;
+//   border: 1px solid black;
+//   height: 30px;
+//   width: 30px;
+//   text-indent: 30px;
+//   transition: all .4s ease;
+// }
+
+// #sidebar li.search form input[type=text]:focus {
+//   box-shadow: 0 2px 0 rgba(0,0,0,.3),
+//               0 0 2px rgba(255,255,255,.3),
+//               inset 0 0px 0px rgba(0,0,0,0.3);
+//   width: 200px;
+// }
+#sidebar li.search {
+  z-index: 991;
+  width: 400px;
+  overflow: visible;
+}
+
+#sidebar li.search form { 
+  display: block;
+}
+
+// #sidebar li.search form.active {
+//   display: inline-block;
+// }

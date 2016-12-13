@@ -4242,6 +4242,9 @@ ul.resource-actions > li {
 #sidebar li.overview .icon {
   background-image: url("/static/img/icon-overview.png"); }
 
+#sidebar li.search .icon {
+  background-image: url("/static/img/icon-search.png"); }
+
 #sidebar li.map .icon {
   background-image: url("/static/img/icon-map.png"); }
 
@@ -4264,6 +4267,7 @@ ul.resource-actions > li {
   background-image: url("/static/img/icon-members.png"); }
 
 #sidebar.overview li.overview a,
+#sidebar.search li.search a,
 #sidebar.map li.map a,
 #sidebar.parties li.parties a,
 #sidebar.resources li.resources a,
@@ -4274,6 +4278,7 @@ ul.resource-actions > li {
   border-left: 7px solid #edaa00; }
 
 #sidebar.overview li.overview .icon,
+#sidebar.search li.search .icon,
 #sidebar.map li.map .icon,
 #sidebar.parties li.parties .icon,
 #sidebar.resources li.resources .icon,
@@ -4284,6 +4289,7 @@ ul.resource-actions > li {
   background-position: -96px 0; }
 
 #sidebar.overview li.overview .title,
+#sidebar.search li.search .title,
 #sidebar.map li.map .title,
 #sidebar.parties li.parties .title,
 #sidebar.resources li.resources .title,
@@ -4411,6 +4417,16 @@ ul.resource-actions > li {
   padding: 4px 4px 5px; }
   #project-map .btn-wrap .btn-block {
     margin: 0 auto; }
+
+/* =Search bar in sidemenu
+-------------------------------------------------------------- */
+#sidebar li.search {
+  z-index: 991;
+  width: 400px;
+  overflow: visible; }
+
+#sidebar li.search form {
+  display: block; }
 
 /* =Forms
 -------------------------------------------------------------- */

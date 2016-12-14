@@ -35,14 +35,8 @@
                     <table>
                       <tr>
                         <div>{{ record.entity_type }}</div>
-                        <h4>{{ record.type }}</h4>
+                        <h4><a href="{% url record.url object.organization.slug object.slug record.url_variable %}">{{ record.main_label }}</a></h4>
                       </tr>
-                      {% for key, attr in record.required_fields %}
-                      <tr>
-                        <td>{{ key }}</td>
-                        <td style="padding-left:50px;">{{ attr }}</td>
-                      </tr>
-                      {% endfor %}
                       {% for key, attr in record.attributes %}
                       <tr>
                         <td>{{ key }}</td>

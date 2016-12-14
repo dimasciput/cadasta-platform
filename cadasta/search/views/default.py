@@ -8,7 +8,7 @@ class Search(LoginPermissionRequiredMixin,
              ProjectMixin,
              TemplateView):
     template_name = 'search/search.html'
-    permission_required = 'project.view'
+    permission_required = 'project.view_private'
     permission_denied_message = org_messages.PROJ_VIEW
 
     def get_context_data(self, **kwargs):

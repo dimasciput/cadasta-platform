@@ -16,13 +16,26 @@ class Search(APIPermissionRequiredMixin,
              ProjectMixin,
              APIView):
 
-    permission_required = 'project.view'
-
-    def get_object(self, queryset=None):
-        return self.get_project()
+    permission_required = 'project.view_private'
 
     def get_perms_objects(self):
         return [self.get_project()]
+
+    def query_es(self, query, project_slug):
+        body = {'query': {'simple_query_string': {
+            'default_operator': 'and',
+            'query': query,
+        }}}
+        api = (
+            settings.ES_SCHEME + '://' + settings.ES_HOST + ':' +
+            settings.ES_PORT
+        )
+        r = requests.post(
+            '{}/{}/_search'.format(api, project_slug),
+            data=json.dumps(body, sort_keys=True),
+        )
+        assert r.status_code == 200
+        return r
 
     def get(self, request, *args, **kwargs):
         query = request.query_params.get('q')
@@ -30,19 +43,7 @@ class Search(APIPermissionRequiredMixin,
         results = []
 
         if query:
-            # Access ES search API
-            body = {'query': {'simple_query_string': {
-                'default_operator': 'and',
-                'query': query,
-            }}}
-            api = (
-                settings.ES_SCHEME + '://' + settings.ES_HOST + ':' +
-                settings.ES_PORT
-            )
-            r = requests.post(
-                api + '/' + kwargs['project'] + '/_search',
-                data=json.dumps(body, sort_keys=True),
-            )
+            r = self.query_es(query, kwargs['project'])
 
             # Parse and translate search results
             for result in r.json()['hits']['hits']:

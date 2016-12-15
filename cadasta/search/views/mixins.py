@@ -7,13 +7,7 @@ from resources.models import Resource
 from spatial.choices import TYPE_CHOICES
 
 
-class SearchResultsMixin(ProjectMixin):
-    def _format_search_results(self):
-        location_schema = False
-        party_schema = False
-        tenure_schema = False
-
-        initial_results = {
+initial_results = {
           "took": 63,
           "timed_out": 'false',
           "_shards": {
@@ -22,7 +16,7 @@ class SearchResultsMixin(ProjectMixin):
             "failed": 0
           },
           "hits": {
-            "total": 1000,
+            "total": 24,
             "max_score": 'null',
             "hits": [{
               "_index": "project-slug",
@@ -73,10 +67,18 @@ class SearchResultsMixin(ProjectMixin):
             ]
           }
         }
+
+
+class SearchResultsMixin(ProjectMixin):
+    def format_search_results(self, results=None):
+        location_schema = False
+        party_schema = False
+        tenure_schema = False
+
         search_results = []
         for result in initial_results['hits']['hits']:
             if result['_type'] == 'location':
-                _result = self.format_result(
+                _result, location_schema = self.format_individual_result(
                     entity_type='Location',
                     entity_model=SpatialUnit,
                     entity_id=result['_id'],
@@ -88,7 +90,7 @@ class SearchResultsMixin(ProjectMixin):
                 search_results.append(_result)
 
             elif result['_type'] == 'party':
-                _result = self.format_result(
+                _result, party_schema = self.format_individual_result(
                     entity_type='Party',
                     entity_model=Party,
                     entity_id=result['_id'],
@@ -99,18 +101,8 @@ class SearchResultsMixin(ProjectMixin):
                 _result['url_variable'] = result['_id']
                 search_results.append(_result)
 
-            elif result['_type'] == 'resource':
-                _result = {}
-                _result['entity_type'] = 'Resource'
-                _result['attributes'] = [
-                    ("Description", result['_source']['description'])]
-                _result['main_label'] = result['_source']['name']
-                _result['url'] = 'resources:project_detail'
-                _result['url_variable'] = result['_id']
-                search_results.append(_result)
-
             elif result['_type'] == 'tenure_rel':
-                _result = self.format_result(
+                _result, tenure_schema = self.format_individual_result(
                     entity_type='Tenure Relationship',
                     entity_model=TenureRelationship,
                     entity_id=result['_id'],
@@ -121,10 +113,22 @@ class SearchResultsMixin(ProjectMixin):
                 _result['url_variable'] = result['_id']
                 search_results.append(_result)
 
+            elif result['_type'] == 'resource':
+                resource = Resource.objects.get(id=result['_id'])
+                _result = {}
+                _result['entity_type'] = 'Resource'
+                _result['attributes'] = [
+                    ("Description", result['_source']['description'])]
+                _result['image'] = resource._original_url
+                _result['main_label'] = result['_source']['name']
+                _result['url'] = 'resources:project_detail'
+                _result['url_variable'] = result['_id']
+                search_results.append(_result)
+
         return search_results
 
-    def format_result(self, entity_type, entity_model, entity_id, schema,
-                      choices, entity_label):
+    def format_individual_result(self, entity_type, entity_model, entity_id,
+                                 schema, choices, entity_label):
         entity = entity_model.objects.get(id=entity_id)
         _result = {}
 
@@ -145,4 +149,10 @@ class SearchResultsMixin(ProjectMixin):
         else:
             _result['main_label'] = entity_label
 
-        return _result
+        return _result, schema
+
+    def get_results_total(self, results=None):
+        return initial_results['hits']['total']
+
+
+

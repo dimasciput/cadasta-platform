@@ -1148,6 +1148,16 @@ textarea.form-control {
   th.archived, th.unarchived {
     display: none !important
   }
+  th.entity-type, th.entity-main-label, th.entity-record {
+    display: none !important
+  }
+  td.entity-type, td.entity-main-label {
+    display: none !important
+  }
+}
+
+#search-results_filter .input-group {
+  display: none !important
 }
 
 table.table-location { // location details in map area

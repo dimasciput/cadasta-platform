@@ -16,41 +16,64 @@
       <div class="panel panel-default">
         <div class="panel-body">
           <form action="#" id="search-form" data-search-api-url="{% url 'api:v1:search:search' object.organization.slug object.slug %}">
+            <div>Last updated {minutes} minutes ago</div>
             <div class="form-group">
               <input type="search" id="search-input" class="form-control" value="{{ search_query }}">
               <button class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> {% trans "Go" %}</button>
+              e.g. "Parcel", "John White", <a href=''>more search guidelines</a>
             </div>
           </form>
-          <h3>{% trans "Search results" %}</h3>
-          <table id="search-results" class="table table-hover datatable" data-paging-type="simple">
-            <thead>
-              <tr>
-                <th class="col-md-12">{% trans "Entity Class" %}</th>
-              </tr>
-            </thead>
-              <tbody>
-                {% for record in search_results %}
-                <tr>
-                  <td>
-                    <table>
-                      <tr>
-                        <div>{{ record.entity_type }}</div>
-                        <h4><a href="{% url record.url object.organization.slug object.slug record.url_variable %}">{{ record.main_label }}</a></h4>
-                      </tr>
-                      {% for key, attr in record.attributes %}
-                      <tr>
-                        <td>{{ key }}</td>
-                        <td style="padding-left:50px;">{{ attr }}</td>
-                      </tr>
-                      {% endfor %}
-                    </table>
-                  </td>
+          {% if total_results == 0 %}
+            <h3>We're sorry, we couldn't find any results for search: <strong>{{ search_terms }}</strong></h3>
+            <div style='padding:20px'>
+              <h4>Search tips:</h4>
+              <ul>
+              <li>Double check your spelling for typos.</li>
+              <li>Use fewer keywords.</li>
+              <li>Refer to our <a>search guidelines</a> for more tips.</li>
+              </ul>
+            </div>
+          {% else %}
+            <h3>Showing {{ total_results }} results for <strong>{{ search_terms }}</strong></h3>
+              <table id="search-results" class="table table-hover datatable" data-paging-type="simple">
+                <thead>
+                  <tr>
+                    <th class='entity-type'></th>
+                    <th class='entity-main-label'></th>
+                    <th class="col-md-12 entity-record">{% trans "Entity Record" %}</th>
+                  </tr>
+                </thead>
+                  <tbody>
+                    {% for record in search_results %}
+                    <tr>
+                      <td class='entity-type'>{{ record.entity_type }}</td>
+                      <td class='entity-main-label'>{{ record.main_label }}</td>
+                      <td>
+                        <table>
+                          <tr>
+                            <div>{{ record.entity_type }}</div>
+                            <h4><a href="{% url record.url object.organization.slug object.slug record.url_variable %}">{{ record.main_label }}</a></h4>
+                          </tr>
+                          {% if record.image %}
+                            <tr>
+                              <img src="{{ record.image }}" class="thumb-60">
+                            </tr>
+                          {% endif %}
+                          {% for key, attr in record.attributes %}
+                          <tr>
+                            <td>{{ key }}</td>
+                            <td style="padding-left:50px;">{{ attr }}</td>
+                          </tr>
+                          {% endfor %}
+                        </table>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
                 </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            </tr>
-          </table>
+              </table>
+          {% endif %}
         </div>
       </div>
     </div>

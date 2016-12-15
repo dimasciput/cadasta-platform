@@ -107,7 +107,6 @@
       <!-- <a href="{% url 'search:search' object.organization.slug object.slug %}"> -->
       <a href="{% url 'search:search' object.organization.slug object.slug %}">
         <span class="icon"></span>
-        <span class="title">{% trans "Search" %}</span>
       </a>
     </li><!-- needed to eliminate spacing issue on horizontal menus
     --><li class="overview">
@@ -195,23 +194,5 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-<script>
-'use strict';
-
-window.addEventListener('load', function() {
-  $('#sidebar.search').on('click', function(e) {
-    // $('span.search').hide()
-    // $('#sidebar-search').addClass('active')
-    // console.log('everything fired')
-    // var url = e.currentTarget.dataset.searchApiUrl;
-    // var query = $('#search-input')[0].value;
-    // $.get(url + '?q=' + query, function(response) {
-    //   var t = $('#search-results').DataTable();
-    //   t.rows().remove();
-    //   t.rows.add(response.results).draw();
-    // });
-  });
-});
-</script>
 
 {% endblock %}

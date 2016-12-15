@@ -6082,6 +6082,13 @@ textarea.form-control {
     display: none !important; }
   .table th.archived, .table th.unarchived {
     display: none !important; }
+  .table th.entity-type, .table th.entity-main-label, .table th.entity-record {
+    display: none !important; }
+  .table td.entity-type, .table td.entity-main-label {
+    display: none !important; }
+
+#search-results_filter .input-group {
+  display: none !important; }
 
 table.table-location {
   border-top: none; }

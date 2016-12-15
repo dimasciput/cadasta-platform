@@ -118,6 +118,7 @@ class SearchResultsMixin(ProjectMixin):
                 _result = {}
                 _result['entity_type'] = 'Resource'
                 _result['attributes'] = [
+                    ("Original File", result['_source']['original_file']),
                     ("Description", result['_source']['description'])]
                 _result['image'] = resource._original_url
                 _result['main_label'] = result['_source']['name']

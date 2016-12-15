@@ -85,8 +85,7 @@
             } else if (selection === 'Show only resources') {
                 value = 'Resource';
             }
-            table.columns(0).search(value).draw();
+            table.columns(0).search(value).draw(false);
         });
-        // }
     });
 })(window, document, jQuery);

@@ -10,10 +10,11 @@ from organization.views.mixins import ProjectMixin
 from spatial.models import SpatialUnit
 from party.models import Party, TenureRelationship
 from resources.models import Resource
+from .mixins import SearchResultsMixin
 
 
 class Search(APIPermissionRequiredMixin,
-             ProjectMixin,
+             SearchResultsMixin,
              APIView):
 
     permission_required = 'project.view_private'
@@ -40,29 +41,65 @@ class Search(APIPermissionRequiredMixin,
     def get(self, request, *args, **kwargs):
         query = request.query_params.get('q')
 
+        initial_results = self.format_search_results()
         results = []
 
-        if query:
-            r = self.query_es(query, kwargs['project'])
+        # if query:
+        #     r = self.query_es(query, kwargs['project'])
 
-            # Parse and translate search results
-            for result in r.json()['hits']['hits']:
-                rec_type = result['_type']
-                id = result['_id']
-                model = {
-                    'location': SpatialUnit,
-                    'party': Party,
-                    'tenure_rel': TenureRelationship,
-                    'resource': Resource,
-                }[rec_type]
-                record = model.objects.get(id=id)
-                # TODO: Perform Tutelary permissions checking
-                results.append([
-                    record.ui_class_name,
-                    '<a href="{}">{}</a>'.format(
-                        record.ui_detail_url,
-                        record.name,
-                    ),
-                ])
+        #     # Parse and translate search results
+        #     for result in r.json()['hits']['hits']:
+        #         rec_type = result['_type']
+        #         id = result['_id']
+        #         model = {
+        #             'location': SpatialUnit,
+        #             'party': Party,
+        #             'tenure_rel': TenureRelationship,
+        #             'resource': Resource,
+        #         }[rec_type]
+        #         record = model.objects.get(id=id)
+        #         # TODO: Perform Tutelary permissions checking
+        #         results.append([
+        #             record.ui_class_name,
+        #             '<a href="{}">{}</a>'.format(
+        #                 record.ui_detail_url,
+        #                 record.name,
+        #             ),
+        #         ])
+        for record in initial_results:
+            print(record)
+            html = (
+             "<td>"
+             "<table>"
+             "<tr>"
+             "<div>{entity_type}</div>"
+             "<h4><a href='{url}'>{main_label}</a></h4>"
+             "</tr>").format(
+                entity_type=record['entity_type'],
+                main_label=record['main_label'],
+                url=record['url'])
+            if record.get('image', None):
+                html += (
+                    '<tr>'
+                    '<img src="{image}" class="thumb-60">'
+                    '</tr>').format(
+                        image=record['image'])
+            for key, attr in record['attributes']:
+                html += (
+                  '<tr>'
+                  '<td>{key}</td>'
+                  '<td style="padding-left:50px;">{attr}</td>'
+                  '</tr>').format(
+                    key=key,
+                    attr=attr)
+
+            html += (
+              '</table>'
+              '</td>'
+            )
+            results.append([
+                record['entity_type'],
+                record['main_label'],
+                html])
 
         return Response({'results': results})

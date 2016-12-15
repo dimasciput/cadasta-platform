@@ -79,58 +79,49 @@ class SearchResultsMixin(ProjectMixin):
         for result in initial_results['hits']['hits']:
             if result['_type'] == 'location':
                 _result, location_schema = self.format_individual_result(
-                    entity_type='Location',
                     entity_model=SpatialUnit,
                     entity_id=result['_id'],
                     schema=location_schema,
                     choices=TYPE_CHOICES,
                     entity_label=result['_source']['type'])
-                _result['url'] = 'locations:detail'
-                _result['url_variable'] = result['_id']
                 search_results.append(_result)
 
             elif result['_type'] == 'party':
                 _result, party_schema = self.format_individual_result(
-                    entity_type='Party',
                     entity_model=Party,
                     entity_id=result['_id'],
                     schema=party_schema,
                     choices=None,
                     entity_label=result['_source']['name'])
-                _result['url'] = 'parties:detail'
-                _result['url_variable'] = result['_id']
                 search_results.append(_result)
 
             elif result['_type'] == 'tenure_rel':
                 _result, tenure_schema = self.format_individual_result(
-                    entity_type='Tenure Relationship',
                     entity_model=TenureRelationship,
                     entity_id=result['_id'],
                     schema=tenure_schema,
                     choices=TENURE_RELATIONSHIP_TYPES,
                     entity_label=result['_source']['tenure_type'])
-                _result['url'] = 'parties:relationship_detail'
-                _result['url_variable'] = result['_id']
                 search_results.append(_result)
 
             elif result['_type'] == 'resource':
                 resource = Resource.objects.get(id=result['_id'])
                 _result = {}
-                _result['entity_type'] = 'Resource'
+                _result['entity_type'] = resource.ui_class_name
                 _result['attributes'] = [
                     ("Original File", result['_source']['original_file']),
                     ("Description", result['_source']['description'])]
                 _result['image'] = resource._original_url
                 _result['main_label'] = result['_source']['name']
-                _result['url'] = 'resources:project_detail'
-                _result['url_variable'] = result['_id']
+                _result['url'] = resource.ui_detail_url
                 search_results.append(_result)
 
         return search_results
 
-    def format_individual_result(self, entity_type, entity_model, entity_id,
+    def format_individual_result(self, entity_model, entity_id,
                                  schema, choices, entity_label):
         entity = entity_model.objects.get(id=entity_id)
+        print(entity.ui_class_name)
         _result = {}
 
         if not schema:
@@ -142,7 +133,8 @@ class SearchResultsMixin(ProjectMixin):
              entity.attributes.get(a.name, '—')))
             for a in attrs if not a.omit]
 
-        _result['entity_type'] = entity_type
+        _result['entity_type'] = entity.ui_class_name
+        _result['url'] = entity.ui_detail_url
         if choices:
             for key, item in choices:
                 if key == entity_label:

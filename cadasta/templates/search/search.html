@@ -44,31 +44,7 @@
                   </tr>
                 </thead>
                   <tbody>
-                    {% for record in search_results %}
-                    <tr>
-                      <td class='entity-type'>{{ record.entity_type }}</td>
-                      <td class='entity-main-label'>{{ record.main_label }}</td>
-                      <td>
-                        <table>
-                          <tr>
-                            <div>{{ record.entity_type }}</div>
-                            <h4><a href="{% url record.url object.organization.slug object.slug record.url_variable %}">{{ record.main_label }}</a></h4>
-                          </tr>
-                          {% if record.image %}
-                            <tr>
-                              <img src="{{ record.image }}" class="thumb-60">
-                            </tr>
-                          {% endif %}
-                          {% for key, attr in record.attributes %}
-                          <tr>
-                            <td>{{ key }}</td>
-                            <td style="padding-left:50px;">{{ attr }}</td>
-                          </tr>
-                          {% endfor %}
-                        </table>
-                      </td>
-                    </tr>
-                    {% endfor %}
+                    
                   </tbody>
                 </table>
                 </tr>
@@ -87,8 +63,13 @@ window.addEventListener('load', function() {
     var url = e.currentTarget.dataset.searchApiUrl;
     var query = $('#search-input')[0].value;
     $.get(url + '?q=' + query, function(response) {
+      console.log(response.results)
       var t = $('#search-results').DataTable();
-      t.rows().remove();
+      t.column(0).visible(false)
+      t.column(1).visible(false)
+      if (t.rows().length !== 0) {
+        t.rows().remove();
+      }
       t.rows.add(response.results).draw();
     });
   });

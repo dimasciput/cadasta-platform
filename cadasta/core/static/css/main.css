@@ -6087,9 +6087,6 @@ textarea.form-control {
   .table td.entity-type, .table td.entity-main-label {
     display: none !important; }
 
-#search-results_filter .input-group {
-  display: none !important; }
-
 table.table-location {
   border-top: none; }
   table.table-location tr:first-child td {

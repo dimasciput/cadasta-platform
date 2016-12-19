@@ -118,10 +118,13 @@ class SearchAPITest(APITestCase, UserTestCase, TestCase):
         response = self.request(user=self.user,
                                 get_data={'q': query})
         assert response.status_code == 200
-        assert response.content['results'] == [[
-            su.ui_class_name,
-            '<a href="{}">{}</a>'.format(su.ui_detail_url, su.name),
-        ]]
+        assert response.content['results'] == [{
+            '_type': 'location',
+            '_id': su.id,
+            'ui_class_name': su.ui_class_name,
+            'ui_detail_url': su.ui_detail_url,
+            'ui_name': su.name,
+        }]
 
         body = {'query': {'simple_query_string': {
             'default_operator': 'and',

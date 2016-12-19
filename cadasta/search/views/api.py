@@ -45,7 +45,7 @@ class Search(APIPermissionRequiredMixin,
         if query:
             r = self.query_es(query, kwargs['project'])
 
-            # Parse and translate search results
+            # Add more detail to search results
             for result in r.json()['hits']['hits']:
                 rec_type = result['_type']
                 id = result['_id']
@@ -57,12 +57,9 @@ class Search(APIPermissionRequiredMixin,
                 }[rec_type]
                 record = model.objects.get(id=id)
                 # TODO: Perform Tutelary permissions checking
-                results.append([
-                    record.ui_class_name,
-                    '<a href="{}">{}</a>'.format(
-                        record.ui_detail_url,
-                        record.name,
-                    ),
-                ])
+                result['ui_class_name'] = record.ui_class_name
+                result['ui_detail_url'] = record.ui_detail_url
+                result['ui_name'] = record.name
+                results.append(result)
 
         return Response({'results': results})

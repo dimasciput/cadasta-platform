@@ -55,8 +55,9 @@ class Search(APIPermissionRequiredMixin,
         tenure_rel = TenureRelationship.objects.filter(project__slug=kwargs['project'])
         resource = Resource.objects.filter(project__slug=kwargs['project'])
 
-        initial_results = get_test_results(su, party, tenure_rel, resource)
-        initial_results = self.format_search_results(initial_results)
+        response_results = get_test_results(su, party, tenure_rel, resource)
+        number_of_results = self.get_results_total(response_results)
+        initial_results = self.format_search_results(response_results)
 
         for record in initial_results:
             html = (
@@ -95,7 +96,8 @@ class Search(APIPermissionRequiredMixin,
                 record['main_label'],
                 html])
 
-        return Response({'results': results})
+        return Response({'results': results,
+                         'number_of_results': number_of_results})
 
 
 # ~~~~~~~~~~~~~~~~~~~~~

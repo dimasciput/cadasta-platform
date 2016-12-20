@@ -6119,6 +6119,9 @@ table#select-list {
   display: inline-block;
   overflow-x: none; }
 
+#no-results {
+  display: none; }
+
 /* =Dashboard map
 -------------------------------------------------------------- */
 #dashboard-map {

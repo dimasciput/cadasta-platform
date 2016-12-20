@@ -20,11 +20,11 @@
             <div class="form-group">
               <input type="search" id="search-input" class="form-control" value="{{ search_query }}">
               <button class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> {% trans "Go" %}</button>
-              e.g. "Parcel", "John White", <a href=''>more search guidelines</a>
+              {% trans 'e.g. "Parcel", "John White", ' %} <a href=''>{% trans 'more search guidelines' %}</a>.
             </div>
           </form>
-          {% if total_results == 0 %}
-            <h3>We're sorry, we couldn't find any results for search: <strong>{{ search_terms }}</strong></h3>
+          <div id='no-results'>
+            <h3>We're sorry, we couldn't find any results for search: <strong><span id='failed-query-string'></span></strong></h3>
             <div style='padding:20px'>
               <h4>Search tips:</h4>
               <ul>
@@ -33,22 +33,21 @@
               <li>Refer to our <a>search guidelines</a> for more tips.</li>
               </ul>
             </div>
-          {% else %}
-            <h3>Showing <span id='total_results'></span> results for <strong>{{ search_terms }}</strong></h3>
-              <table id="search-results" class="table table-hover datatable" data-paging-type="simple">
-                <thead>
-                  <tr>
-                    <th class='entity-type'></th>
-                    <th class='entity-main-label'></th>
-                    <th class="col-md-12 entity-record">{% trans "Entity Record" %}</th>
-                  </tr>
-                </thead>
-                  <tbody>
-                  </tbody>
-                </table>
+          </div>
+          <h3><span id='total-results'></span><strong><span id='query-string'></span></strong></h3>
+            <table id="search-results" class="table table-hover datatable" data-paging-type="simple">
+              <thead>
+                <tr>
+                  <th class='entity-type'></th>
+                  <th class='entity-main-label'></th>
+                  <th class="col-md-12 entity-record">{% trans "Entity Record" %}</th>
                 </tr>
+              </thead>
+                <tbody>
+                </tbody>
               </table>
-          {% endif %}
+              </tr>
+            </table>
         </div>
       </div>
     </div>
@@ -57,20 +56,39 @@
 <script>
 'use strict';
 
-window.addEventListener('load', function() {
-  $('#search-form').bind('submit', function(e) {
-    var url = e.currentTarget.dataset.searchApiUrl;
-    var query = $('#search-input')[0].value;
-    $.get(url + '?q=' + query, function(response) {
-      var t = $('#search-results').DataTable();
-      t.column(0).visible(false)
-      t.column(1).visible(false)
-      if (t.rows().length !== 0) {
-        t.rows().remove();
-      }
-      t.rows.add(response.results).draw();
+window.addEventListener('load', function () {
+    $('#search-form').bind('submit', function (e) {
+        var url = e.currentTarget.dataset.searchApiUrl;
+        var query = $('#search-input')[0].value;
+        $.get(url + '?q=' + query, function (response) {
+            var t = $('#search-results').DataTable();
+            t.column(0).visible(false);
+            t.column(1).visible(false);
+            if (t.rows().length !== 0) {
+                t.rows().remove();
+            }
+            t.rows.add(response.results).draw();
+
+            if (response.number_of_results === 0) {
+                $('#no-results').css('display', 'block');
+                $('#failed-query-string').text(query);
+                $('#search-results').css('display', 'none');
+                $('#search-results_filter').css('display', 'none');
+            } else if (query === '') {
+                $('#no-results').css('display', 'none');
+                $('#search-results').css('display', 'block');
+                $('#search-results_filter').css('display', 'block');
+                $('#total-results').text("Showing " + response.number_of_results + " results for ");
+                $('#query-string').text("' '");
+            } else {
+                $('#no-results').css('display', 'none');
+                $('#search-results').css('display', 'block');
+                $('#search-results_filter').css('display', 'block');
+                $('#total-results').text("Showing " + response.number_of_results + " results for ");
+                $('#query-string').text(query);
+            }
+        });
     });
-  });
 });
 </script>
 

@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from questionnaires.managers import create_attrs_schema
 from questionnaires.tests.attr_schemas import (individual_party_xform_group,
                                                default_party_xform_group,
-                                               tenure_relationship_xform_group,)
+                                               tenure_relationship_xform_group)
 from questionnaires.tests.factories import QuestionnaireFactory
 from core.tests.utils.cases import UserTestCase
 from spatial.tests.factories import SpatialUnitFactory
@@ -90,7 +90,6 @@ class SearchResultsMixinTest(UserTestCase, TestCase):
         assert final_result['main_label'] == _('Big Bird')
 
     def test_format_result_tenure_relationship(self):
-        result = self.results['hits']['hits'][2]
         final_result = mixin().format_result(
             type(self.tenure_rel), self.tenure_rel_result)
 
@@ -103,7 +102,6 @@ class SearchResultsMixinTest(UserTestCase, TestCase):
         assert final_result['main_label'] == _('Customary Rights')
 
     def test_format_result_resource(self):
-        result = self.results['hits']['hits'][3]
         final_result = mixin().format_result(
             type(self.resource), self.resource_result)
 

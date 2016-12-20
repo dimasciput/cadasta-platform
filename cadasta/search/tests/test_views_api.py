@@ -11,6 +11,7 @@ from accounts.tests.factories import UserFactory
 from core.tests.utils.cases import UserTestCase
 from organization.tests.factories import ProjectFactory
 from spatial.tests.factories import SpatialUnitFactory
+from resources.tests.factories import ResourceFactory
 from ..views import api
 
 
@@ -99,16 +100,25 @@ class SearchAPITest(APITestCase, UserTestCase, TestCase):
 
     @patch('requests.post')
     def test_get_with_valid_user_and_with_results(self, mock_post):
-        su = SpatialUnitFactory.create(project=self.project)
+        su = SpatialUnitFactory.create(project=self.project, type='CB')
 
         mock_post.return_value.status_code = 200
         mock_post.return_value.json.return_value = {
             'hits': {
                 'total': 0,
-                'hits': [
-                    {
-                        '_type': 'location',
-                        '_id': su.id,
+                'hits': [{
+                    "_index": "project-slug",
+                    "_type": "location",
+                    "_id": su.id,
+                    "sort": [0],
+                    "_score": 'null',
+                    "_source": {
+                        "type": "CB",
+                        "name": "Long Island",
+                        "notes": "Nothing to see here.",
+                        "acquired_when": "2016-12-16",
+                        "quality": "text",
+                        "acquired_how": "LH"}
                     },
                 ],
             },
@@ -120,7 +130,69 @@ class SearchAPITest(APITestCase, UserTestCase, TestCase):
         assert response.status_code == 200
         assert response.content['results'] == [[
             su.ui_class_name,
-            '<a href="{}">{}</a>'.format(su.ui_detail_url, su.name),
+            'Community boundary',
+            ("<td><table><tr><div>Location</div>"
+             "<h4><a href='/organizations/{org}/projects/{proj}/records/"
+             "locations/{spatial_id}/'>Community boundary</a></h4>"
+             "</tr></table></td>").format(
+                org=su.project.organization.slug,
+                proj=su.project.slug,
+                spatial_id=su.id),
+        ]]
+
+        body = {'query': {'simple_query_string': {
+            'default_operator': 'and',
+            'query': query,
+        }}}
+        mock_post.assert_called_once_with(
+            '{}/{}/_search'.format(api_url, self.project.slug),
+            data=json.dumps(body, sort_keys=True),
+        )
+
+    @patch('requests.post')
+    def test_get_with_valid_user_and_with_resource_results(self, mock_post):
+        resource = ResourceFactory.create(project=self.project)
+
+        mock_post.return_value.status_code = 200
+        mock_post.return_value.json.return_value = {
+            'hits': {
+                'total': 0,
+                'hits': [{
+                    "_index": "project-slug",
+                    "_type": "resource",
+                    "_id": resource.id,
+                    "sort": [0],
+                    "_score": 'null',
+                    "_source": {
+                        "type": "CB",
+                        "name": "Fake Resource",
+                        "description": "Nothing to see here.",
+                        "original_file": "fake_resource.jpeg"}
+                    },
+                ],
+            },
+        }
+
+        query = 'none'
+        response = self.request(user=self.user,
+                                get_data={'q': query})
+        assert response.status_code == 200
+        assert response.content['results'] == [[
+            resource.ui_class_name,
+            'Fake Resource',
+            ("<td><table><tr><div>Resource</div>"
+             "<h4><a href='/organizations/{org}/projects/{proj}/"
+             "resources/{resource_id}/'>Fake Resource</a></h4>"
+             "</tr><tr><img src=\"{resource_url}\" class=\"thumb-60\"></tr>"
+             "<tr><td>Original File</td>"
+             "<td style=\"padding-left:50px;\">fake_resource.jpeg</td></tr>"
+             "<tr><td>Description</td>"
+             "<td style=\"padding-left:50px;\">Nothing to see here.</td>"
+             "</tr></table></td>").format(
+                org=resource.project.organization.slug,
+                proj=resource.project.slug,
+                resource_id=resource.id,
+                resource_url=resource._original_url),
         ]]
 
         body = {'query': {'simple_query_string': {

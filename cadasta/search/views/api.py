@@ -6,10 +6,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from tutelary.mixins import APIPermissionRequiredMixin
 
-from organization.views.mixins import ProjectMixin
-from spatial.models import SpatialUnit
-from party.models import Party, TenureRelationship
-from resources.models import Resource
 from .mixins import SearchResultsMixin
 
 
@@ -109,7 +105,9 @@ class Search(APIPermissionRequiredMixin,
 
         if query:
             r = self.query_es(query, kwargs['project'])
-            initial_results = self.format_search_results(r)
+            print(r.json())
+            initial_results = self.format_search_results(r.json())
+            print(initial_results)
 
         #     # Parse and translate search results
         #     for result in r.json()['hits']['hits']:

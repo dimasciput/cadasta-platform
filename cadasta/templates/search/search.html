@@ -34,7 +34,7 @@
               </ul>
             </div>
           {% else %}
-            <h3>Showing {{ total_results }} results for <strong>{{ search_terms }}</strong></h3>
+            <h3>Showing <span id='total_results'></span> results for <strong>{{ search_terms }}</strong></h3>
               <table id="search-results" class="table table-hover datatable" data-paging-type="simple">
                 <thead>
                   <tr>
@@ -44,7 +44,6 @@
                   </tr>
                 </thead>
                   <tbody>
-                    
                   </tbody>
                 </table>
                 </tr>
@@ -63,7 +62,6 @@ window.addEventListener('load', function() {
     var url = e.currentTarget.dataset.searchApiUrl;
     var query = $('#search-input')[0].value;
     $.get(url + '?q=' + query, function(response) {
-      console.log(response.results)
       var t = $('#search-results').DataTable();
       t.column(0).visible(false)
       t.column(1).visible(false)
